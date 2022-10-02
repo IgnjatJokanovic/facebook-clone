@@ -1,0 +1,31 @@
+//
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Roboto:400,700&display=swap");
+
+//Variables
+@import "./variables";
+@import "./normalize";
+
+//Pages
+
+//Components
+@import "./components/main";
+@import "./pages/home";
+@import "./pages/profile";
+
+input {
+    padding: 0.3rem;
+    border: 1px solid $grey;
+    border-radius: 5px;
+}
+a {
+    text-decoration: none !important;
+}
+
+// body {
+//     overflow-y: scroll;
+//     -ms-overflow-style: none;
+//     scrollbar-width: none;
+//     &::-webkit-scrollbar {
+//         display: none;
+//     }
+// }
