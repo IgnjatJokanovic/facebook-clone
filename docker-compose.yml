@@ -1,0 +1,52 @@
+version: '3.6'
+
+#Networks
+networks:
+  facebook:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local
+
+services:
+    #MYSQL Service
+    db:
+        container_name: facebook_mysql
+        image: mariadb:10.5.15
+        command:
+            --sql_mode="IGNORE_SPACE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+        environment:
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ""
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        ports:
+            - "3306:3306"
+        logging:
+            driver: "json-file"
+        restart: unless-stopped
+        volumes:
+            - dbdata:/var/lib/mysql
+        env_file:
+            - .env
+        networks:
+            - facebook
+    #Laravel app
+    app:
+        container_name: facebook_app
+        image: php:8.1
+        working_dir: /project/facebook-clone
+        build:
+            context: .
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - ./:/project
+        ports:
+            - "8000:8000"
+        networks:
+            - facebook
