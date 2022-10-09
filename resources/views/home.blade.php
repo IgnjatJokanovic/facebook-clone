@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" href="img/favicon-32x32.png" sizes="32x32">
+    {{-- <link rel="icon" href="img/favicon-32x32.png" sizes="32x32"> --}}
     <link rel="stylesheet" rel="preload"  href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
         integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
         <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -16,7 +16,7 @@
     @viteReactRefresh
     @vite('resources/js/app.jsx')
     @vite('resources/sass/app.scss')
-    @vite('resources/sass/app.css')
+    @vite('resources/css/app.css')
 </head>
 
 <body>

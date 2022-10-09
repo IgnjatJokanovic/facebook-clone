@@ -18,15 +18,7 @@ app(){
         return 0;
     fi
 
-    if [ ! -d "$VENDOR_DIR" ] || [ ! -d "$NODE_MODULES_DIR" ]
-    then
-
-        if [ $1 != "setup" ]
-        then
-            setup
-        fi
-
-    fi
+    install_dependecies
 
     case $COMMAND in
         setup)
@@ -35,11 +27,20 @@ app(){
         start)
             start_server
             ;;
+        npm)
+            npm
+            ;;
+        php)
+            php
+            ;;
+        composer)
+            composer
+            ;;
         exec)
             execute
             ;;
-        kill)
-            execute
+        stop)
+            kill_container
             ;;
         help)
             print_help
@@ -54,46 +55,62 @@ app(){
 
 print_help(){
     echo "Commands:"
-    echo "  setup     Setup enviroment"
-    echo "  start     Serve laravel and react app"
-    echo "  exec      Run custom command on container"
-    echo "  help      Show usage help"
+    echo "  setup       Setup enviroment"
+    echo "  start       Serve laravel and react app"
+    echo "  npm         Run npm command"
+    echo "  php         Run php command"
+    echo "  composer    Run composer command"
+    echo "  exec        Run custom command on container"
+    echo "  stop        Stop running container"
+    echo "  help        Show usage help"
     echo ""
 }
 
 setup(){
-
     if [ ! -f ".env" ]
     then
         cp .env.example .env
     fi
 
-    docker run \
-        --rm --interactive --tty \
-        --volume ${PWD}:/app \
-        --workdir /app \
-        $COMPOSER_IMAGE -o --ignore-platform-reqs --no-plugins install
+    CUSTOM_COMMAND="artisan key:generate"
+    php
 
-    docker run \
-        --rm --interactive --tty \
-        --volume ${PWD}:/app \
-        --workdir /app \
-        $NODE_IMAGE npm install
-
-    docker run \
-        --rm --interactive --tty \
-        --volume ${PWD}:/app \
-        --workdir /app \
-        $PHP_IMAGE php artisan key:generate
+    build_image
 
     start_server
-
-    echo "Server listening on http://localhost:8000"
 }
 
 start_server(){
     CUSTOM_COMMAND="npm run dev"
+
     execute
+
+    echo "Server listening on http://localhost:8000"
+}
+
+npm(){
+    docker run \
+        --rm --interactive --tty \
+        --volume ${PWD}:/app \
+        --workdir /app \
+        $NODE_IMAGE npm $CUSTOM_COMMAND
+}
+
+php(){
+    docker run \
+        --rm --interactive --tty \
+        --volume ${PWD}:/app \
+        --workdir /app \
+        $PHP_IMAGE php $CUSTOM_COMMAND
+}
+
+composer(){
+    echo "uso u composer"
+    docker run \
+        --rm --interactive --tty \
+        --volume ${PWD}:/app \
+        --workdir /app \
+        $COMPOSER_IMAGE -o --ignore-platform-reqs --no-plugins $CUSTOM_COMMAND
 }
 
 kill_container(){
@@ -108,7 +125,22 @@ execute(){
         docker-compose up -d
     fi
 
-    docker exec -d -w /project/facebook-clone $CONTAINER_NAME $CUSTOM_COMMAND
+    docker exec -d -w /project $CONTAINER_NAME $CUSTOM_COMMAND
+}
+
+install_dependecies(){
+
+    if [ ! -d "$VENDOR_DIR" ] || [ ! -d "$NODE_MODULES_DIR" ]
+    then
+        CUSTOM_COMMAND="install"
+
+        npm
+        composer
+    fi
+}
+
+build_image(){
+    docker-compose build
 }
 
 if [ -z "$2" ]

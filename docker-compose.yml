@@ -1,9 +1,8 @@
-version: '3.6'
+version: '3'
 
 #Networks
 networks:
   facebook:
-    driver: bridge
 
 #Volumes
 volumes:
@@ -37,8 +36,7 @@ services:
     #Laravel app
     app:
         container_name: facebook_app
-        image: php:8.1
-        working_dir: /project/facebook-clone
+        image: php:8.1-fpm
         build:
             context: .
             dockerfile: Dockerfile
@@ -47,6 +45,9 @@ services:
         volumes:
             - ./:/project
         ports:
-            - "8000:8000"
+            - '${APP_PORT:-80}:80'
+            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+            - '8000:8000'
+            - '3000:3000'
         networks:
             - facebook
