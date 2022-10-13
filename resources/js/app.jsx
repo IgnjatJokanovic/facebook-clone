@@ -1,13 +1,28 @@
 import './bootstrap';
 
-import React from 'react';
-import { createRoot } from 'react-dom/client'
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { createRoot } from 'react-dom/client';
+// import PageLoader from './components/loaders/PageLoader';
+
+const Home = lazy(() => import("./pages/home"));
+const PageLoader = lazy(() => import("./components/loaders/PageLoader"));
+
 
 export default function App(){
     return(
-        <h1>How To Install React in Laravel 9 with Vite</h1>
+        <React.StrictMode>
+            <Router>
+                <Suspense fallback={<PageLoader/>}>
+                    <Routes>
+                        <Route path='/' element={<Home/>}></Route>
 
+                    </Routes>
+                </Suspense>
+            </Router>
+        </React.StrictMode>
     );
+
 }
 
 if(document.getElementById('app')){
