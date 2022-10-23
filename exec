@@ -86,7 +86,7 @@ start_server(){
 
     execute
 
-    echo "Server listening on http://localhost:8000\n"
+    echo "Server listening on http://localhost:8000"
     echo "Phpmyadmin listening on http://localhost:8080"
 }
 
