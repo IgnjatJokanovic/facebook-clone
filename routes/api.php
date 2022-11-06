@@ -33,6 +33,9 @@ Route::prefix('user')->group(function(){
     Route::get('/show/{slug}', [UserController::class, 'show']);
     Route::post('/delete', [UserController::class, 'delete']);
     Route::post('/update', [UserController::class, 'update']);
+    Route::post('/update/password', [UserController::class, 'updatePassword']);
+    Route::post('/update/profile', [UserController::class, 'updateProfile']);
+    Route::post('/update/cover', [UserController::class, 'updateCover']);
 });
 
 // Auth routes
@@ -68,6 +71,7 @@ Route::prefix('comment')->group(function(){
 
 // Reaction routes
 Route::prefix('reaction')->group(function(){
+    Route::get('/', [ReactionController::class, 'index']);
     Route::post('/create', [ReactionController::class, 'create']);
     Route::post('/update', [ReactionController::class, 'update']);
     Route::post('/delete', [ReactionController::class, 'delete']);
