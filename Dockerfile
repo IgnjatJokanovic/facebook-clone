@@ -1,7 +1,9 @@
 FROM php:8.1-fpm
 
 # Make project direcotry
+RUN echo $CURRENT_UID
 RUN mkdir project/
+RUN chown -R $CURRENT_UID project/
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

@@ -6,7 +6,8 @@ CUSTOM_COMMAND=""
 CONTAINER_NAME="facebook_app"
 COMPOSER_IMAGE="composer:2"
 NODE_IMAGE="node:18-alpine"
-PHP_IMAGE="php:8.1"
+PHP_IMAGE="php:8.1-fpm"
+export CURRENT_UID=$(id -u):$(id -g)
 
 app(){
 
@@ -86,6 +87,7 @@ start_server(){
     execute
 
     echo "Server listening on http://localhost:8000"
+    echo "Phpmyadmin listening on http://localhost:8080"
 }
 
 npm(){
@@ -93,6 +95,7 @@ npm(){
         --rm --interactive --tty \
         --volume ${PWD}:/app \
         --workdir /app \
+        --user $CURRENT_UID \
         $NODE_IMAGE npm $CUSTOM_COMMAND
 }
 
@@ -101,15 +104,17 @@ php(){
         --rm --interactive --tty \
         --volume ${PWD}:/app \
         --workdir /app \
+        --user $CURRENT_UID \
+        --network facebook \
         $PHP_IMAGE php $CUSTOM_COMMAND
 }
 
 composer(){
-    echo "uso u composer"
     docker run \
         --rm --interactive --tty \
         --volume ${PWD}:/app \
         --workdir /app \
+        --user $CURRENT_UID \
         $COMPOSER_IMAGE -o --ignore-platform-reqs --no-plugins $CUSTOM_COMMAND
 }
 
@@ -125,7 +130,7 @@ execute(){
         docker-compose up -d
     fi
 
-    docker exec -d -w /project $CONTAINER_NAME $CUSTOM_COMMAND
+    docker exec -d -w /project -u $CURRENT_UID $CONTAINER_NAME $CUSTOM_COMMAND
 }
 
 install_dependecies(){
@@ -145,7 +150,6 @@ build_image(){
 
 if [ -z "$2" ]
 then
-    echo $1
     app $1
 else
     CUSTOM_COMMAND=${@: 2}

@@ -2,7 +2,8 @@ version: '3'
 
 #Networks
 networks:
-  facebook:
+  default:
+    name: facebook
 
 #Volumes
 volumes:
@@ -32,7 +33,7 @@ services:
         env_file:
             - .env
         networks:
-            - facebook
+            - default
     #Laravel app
     app:
         container_name: facebook_app
@@ -42,12 +43,35 @@ services:
             dockerfile: Dockerfile
         restart: unless-stopped
         tty: true
+        depends_on:
+            - db
         volumes:
             - ./:/project
         ports:
-            - '${APP_PORT:-80}:80'
+            # - '${APP_PORT:-80}:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
             - '8000:8000'
             - '3000:3000'
         networks:
-            - facebook
+            - default
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: facebook_phpmyadmin
+        restart: unless-stopped
+        environment:
+            PMA_HOST: facebook_mysql
+            PMA_USER: ${DB_USERNAME}
+            PMA_PASSWORD: ${DB_PASSWORD}
+        depends_on:
+            - db
+        ports:
+            - "8080:80"
+        networks:
+            - default
+
+    redis:
+        image: redis
+        container_name: facebook_redis
+        restart: unless-stopped
+        networks:
+            - default
